@@ -1,12 +1,22 @@
-const axios = require("axios");
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
 
-axios
-  .get("https://api.spotify.com/v1/search?q=smokeweed&type=track", {
-    headers: {
-      Authorization:
-        "Bearer BQB4wMoVsJl5gfmaQahfwghl26wGGnDXZDDNvAWySf4-aEqqybs4p5xMcoZna_5YW5hSdKWakPW_eHe5HAWHzNbhqoHcRntSTw6r04CSSP2SYvcmy7qN-qjUypT9I2Ugj9kJGVu39GWX0xX0uIiEcWRuoAXZHMTrwJHvsaBRrMb1O1VzRCphVCeMmfNg2V46GOCIkWtzk_UNWDCehzQ",
-    },
-  })
-  .then((data) => {
-    console.log(data.data.tracks.items[0].id);
-  });
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
+
+io.on('connection', (socket) => {   
+    socket.on('message', (message) => {
+        io.emit('message', message);
+    });
+});
+
+server.listen(3005, () => {
+    console.log(`Server is running on http://localhost:3005`);
+
+});
+ 
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
